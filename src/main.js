@@ -14,13 +14,13 @@ let config = {
     width: 640,
     height: 480,
 
-    scene: [ Menu, Play ]
+    scene: [ Menu, Play, credit]
   }
 
 let game = new Phaser.Game(config)
 
 //reserve keyboard bindings
-let keyJUMP, keyRESET
+let keyJUMP, keyRESET, keyLEFT, keyRIGHT
 
 // set UI sizes
 let borderUISize = game.config.height / 15
