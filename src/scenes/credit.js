@@ -26,8 +26,9 @@ class credit extends Phaser.Scene {
     
             // Credits Text
             this.add.text(game.config.width / 2, game.config.height / 2, 'Game by: Sam Webster', { fontFamily: 'Orbitron', fontSize: '20px', color: '#E31E29' }).setOrigin(0.5);
-            this.add.text(game.config.width / 2, game.config.height / 2 + 40, 'Music: Artist Name', { fontFamily: 'Orbitron', fontSize: '20px', color: '#E31E29' }).setOrigin(0.5);
-    
+            this.add.text(game.config.width / 2, game.config.height / 2 + 40, 'Music: Hartzmann, from Uppbeat', { fontFamily: 'Orbitron', fontSize: '20px', color: '#E31E29' }).setOrigin(0.5);
+            this.add.text(game.config.width / 2, game.config.height / 2 + 70, 'AND Benjamin Tissot, from Bensound', { fontFamily: 'Orbitron', fontSize: '20px', color: '#E31E29' }).setOrigin(0.5);
+
             // Back Button
             let backButton = this.add.text(game.config.width / 2, game.config.height / 2 + 150, 'BACK', menuConfig)
                 .setOrigin(0.5)

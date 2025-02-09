@@ -14,27 +14,22 @@ class Menu extends Phaser.Scene {
         this.load.image('railFence', './assets/railFence.png')
         this.load.image('roof1', './assets/roof1.png')
         this.load.image('roof2', './assets/roof2.png')
+        this.load.image('roof3', './assets/roof3.png')
+        this.load.image('roof4', './assets/roof4.png')
+        this.load.image('roof5', './assets/roof5.png')
         this.load.image('backgroundMenu', './assets/backgroundMenu.png')
-        //load animations / sprite sheets
-        /*this.load.spritesheet('explosion', './assets/explosion.png',{
-            frameWidth: 64,
-            frameHeight: 32,
-            startFrame: 0,
-            endFrame: 9,
-        })*/
-        // load audio
-        this.load.audio('jump', './assets/jump.wav')
-        this.load.audio('step 1', './assets/step 1.wav')
-        this.load.audio('step 2', './assets/step 2.wav')
-        this.load.audio('grid', './assets/grid-hartzmann-main-version-13277-02-49.mp3')
+        this.load.image('playerSprite', './assets/playerSprite.png')
+        
         this.load.audio('hover', './assets/hoverTone.wav')
         this.load.audio('select', './assets/select.wav')
+        this.load.audio('dance', './assets/dance.mp3')
+
     }
 
     create() {
-      this.sound.play('grid', { loop: true, volume: 0.2 }); // Adjust volume as needed
-
-      
+        this.music = this.sound.add('dance', { loop: true, volume: 0.5 });
+        this.music.play();
+    
       this.cityFAR = this.add.tileSprite(0, 0, 1920, 1080, 'cityFAR').setOrigin(0,0)
       this.cityMID = this.add.tileSprite(0, 0, 1920, 1080, 'cityMID').setOrigin(0,0)
       this.cityFAR.setScale(0.4)
@@ -61,41 +56,42 @@ class Menu extends Phaser.Scene {
           .setOrigin(0.5)
           .setInteractive()
           .on('pointerover', () => {
-            // Play sound on hover
             this.sound.play('hover');
-            playButton.setStyle({ color: '#ef4591' }); // Hover effect
+            playButton.setStyle({ color: '#ef4591' }); 
           })
           .on('pointerout', () => playButton.setStyle({ backgroundColor: '', color: '#E31E29' })) // Reset
           .on('pointerdown', () => {
-            // Play sound on hover
             this.sound.play('select');
-            playButton.setStyle({ color: '#ef4591' }); // Hover effect
+            playButton.setStyle({ color: '#ef4591' }); 
             game.settings = {
               roofSpeed: 3,
             }
-            this.scene.start('playScene');
+            this.sound.stopByKey('dance')
+            this.scene.start('playScene')
           })
-          // Credits Button (Moved further down too)
+
+
       let creditsButton = this.add.text(game.config.width / 2, game.config.height / 2 + 120, 'CREDITS', menuConfig) // <-- Adjusted Y position
           .setOrigin(0.5)
           .setInteractive()
           .on('pointerover', () => {
-            // Play sound on hover
             this.sound.play('hover');
-            creditsButton.setStyle({ color: '#ef4591' }); // Hover effect
+            creditsButton.setStyle({ color: '#ef4591' }); 
           })
           .on('pointerout', () => creditsButton.setStyle({ backgroundColor: '', color: '#E31E29' })) // Reset
           .on('pointerdown', () => {
-            // Play sound on hover
             this.sound.play('select');
-            creditsButton.setStyle({ color: '#ef4591' }); // Hover effect
-            this.scene.start('creditsscene');
+            creditsButton.setStyle({ color: '#ef4591' }); 
+            this.sound.stopByKey('dance')
+            this.scene.start('creditsscene')
           })
 
     this.add.text(game.config.width/2, game.config.height/2, 'USE SPACE TO JUMP', menuConfig).setOrigin(0.5)
     menuConfig.backgroundColor = '#E31E29'
     menuConfig.color = '#000'
     this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, '', menuConfig).setOrigin(0.5)
+
+    
 
     }
     
