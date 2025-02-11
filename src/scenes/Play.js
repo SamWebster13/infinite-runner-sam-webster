@@ -38,7 +38,7 @@ class Play extends Phaser.Scene {
         this.add.rectangle(0, borderUISize + borderPadding + 375, game.config.width, borderUISize * 2, 0xD2038).setOrigin(0, 0);
     
         // Create the player object
-        this.player = new Player(this, 100, game.config.height - 150, 'player');
+        this.player = new Player(this, 100, game.config.height - 250, 'player');
     
         // Enable physics for the player (now that it has been created)
         this.physics.world.enable(this.player);
@@ -46,7 +46,7 @@ class Play extends Phaser.Scene {
         this.roofs = this.add.group(); // Create a group to store roofs
         let spacing = 200; // Base distance between buildings
         for (let i = 0; i < 10; i++) {
-            let xPos = i * spacing + Phaser.Math.Between(50, 150); // Space out the roofs with some randomness
+            let xPos = i * spacing + Phaser.Math.Between(100, 200); // Space out the roofs with some randomness
             let newRoof = new Roof(this, xPos, game.config.height - 25, this.getRandomRoofTexture());
             this.roofs.add(newRoof);
             this.roofCounter++; // Increase count
