@@ -1,31 +1,42 @@
 class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
-        scene.add.existing(this);
         
+        scene.add.existing(this);
+        this.ifPlayerAlive = true
         scene.physics.add.existing(this);
 
         this.body.setSize(this.width / 2, this.height / 2);
         this.body.setCollideWorldBounds(true);
-        this.setFlipX(true);
+        this.body.setSize(this.width * 0.8, this.height * 1.8);
+        this.body.setOffset(this.width * 0.2, this.height * 0.2);
+
         // Create animations (only once)
         this.createAnimations(scene);
 
         // Set default animation to "running"
-        this.play('running');
-        
-        this.isJumping = false; // Track jumping state
+        this.setFlipX(true);
 
+        this.isJumping = false; // Track jumping state
+ 
         
     }
     
+
     createAnimations(scene) {
         // Running Animation
         scene.anims.create({
             key: 'running',
-            frames: scene.anims.generateFrameNumbers('run', { start: 0, end: 8 }),
-            frameRate: 14,
-            repeat: 0
+            frames: scene.anims.generateFrameNumbers('run', { start: 0, end: 11 }),
+            frameRate: 16,
+            repeat: -1 // Loop indefinitely
+        });
+
+        scene.anims.create({
+            key: 'idle',
+            frames: scene.anims.generateFrameNumbers('run', { start: 0, end: 0 }),
+            frameRate: 16,
+            repeat: -1 // Loop indefinitely
         });
 
         // Jumping Animation
@@ -39,47 +50,49 @@ class Player extends Phaser.GameObjects.Sprite {
         // Dying Animation
         scene.anims.create({
             key: 'dying',
-            frames: scene.anims.generateFrameNumbers('death', { start: 0, end:  9}),
+            frames: scene.anims.generateFrameNumbers('death', { start: 0, end: 9 }),
             frameRate: 10,
             repeat: 0
         });
     }
 
     update(cursors) {
-        if (Phaser.Input.Keyboard.JustDown(cursors.space) && !this.isJumping) {
-            this.isJumping = true;
-            this.body.setVelocityY(-300); // Adjust for jump strength
-            this.play('jumping');
-            this.on('animationcomplete-jumping', (anim, frame) => {
-                if (this.isJumping) {
-                    // Get the last frame from the animation
-                    const lastFrame = anim.frames[anim.frames.length - 1];
-                    // Set the sprite's frame to the last frame
-                    this.setFrame(lastFrame.textureFrame);
-                    // Pause the animation so it doesn't loop or clear the frame
+        
+
+        if(this.ifPlayerAlive){
+            if (cursors.left.isDown) {
+                this.body.setVelocityX(-100); // Move left
+                this.play('running', true);
+                this.setFlipX(false);               
+                
+            } else if (cursors.right.isDown) {
+                this.body.setVelocityX(100); // Move right
+                this.play('running', true);
+                this.setFlipX(true);
+
+            } else if (!cursors.right.isDown && !cursors.left.isDown && !Phaser.Input.Keyboard.JustDown(cursors.up)){
+                this.body.setVelocityX(0); // Stop moving horizontally when no keys are pressed
+                this.play('idle');
+            }
+            
+            // Handle jumping
+            if (Phaser.Input.Keyboard.JustDown(cursors.up) && this.body.blocked.down) {
+                this.isJumping = true;
+                this.body.setVelocityY(-200); // Adjust for jump strength
+            }
+
+            // If the player is still in the air, hold the last jump frame
+            if (!this.body.blocked.down) {
+                this.isJumping = true;
+                if (this.anims.currentAnim && this.anims.currentAnim.key === 'jumping' && this.anims.currentFrame.index === 2) {
                     this.anims.pause();
                 }
-            }, this);
-        }
-    
-        // Check if player has landed on a roof
-        if (this.body.blocked.down) {
-            if (this.isJumping) {
-                this.isJumping = false;
-                this.anims.resume(); // In case it was paused on the jump's last frame
-                this.play('running', true);
+            } else {
+                // When the player lands, resume running animation
+                if (this.isJumping) {
+                    this.isJumping = false;
+                }
             }
         }
-    
-        // If player falls below the screen
-        if (this.y > game.config.height) {
-            this.die();
-        }
-    }
-    
-    die() {
-        this.play('dying');
-        this.body.setVelocityX(0); // Stop movement
-        // Add game over logic here if necessary (e.g. restart or show game over screen)
     }
 }

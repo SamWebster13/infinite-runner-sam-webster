@@ -1,33 +1,7 @@
-class Menu extends Phaser.Scene {
+class gameover extends Phaser.Scene {
     constructor() {
-      super("menuScene")
+      super("gameoverScene")
     }
-    preload(){
-        //load images/tile sprites
-        this.load.image('cityFAR', './assets/cityFAR.png')
-        this.load.image('cityMID', './assets/cityMID.png')
-        this.load.image('box', './assets/box.png')
-        this.load.image('building', './assets/building.png')
-        this.load.image('fence', './assets/fence.png')
-        this.load.image('ladder', './assets/ladder.png')
-        this.load.image('rail', './assets/rail.png')
-        this.load.image('railFence', './assets/railFence.png')
-        this.load.image('roof1', './assets/roof1.png')
-        this.load.image('roof2', './assets/roof2.png')
-        this.load.image('roof3', './assets/roof3.png')
-        this.load.image('roof4', './assets/roof4.png')
-        this.load.image('roof5', './assets/roof5.png')
-        this.load.image('backgroundMenu', './assets/backgroundMenu.png')
-        this.load.image('playerSprite', './assets/playerSprite.png')
-        
-        this.load.audio('hover', './assets/hoverTone.wav')
-        this.load.audio('select', './assets/select.wav')
-        this.load.audio('dance', './assets/dance.mp3')
-        this.load.audio('deathSound', './assets/deathSound.wav')
-        
-
-    }
-
     create() {
         this.music = this.sound.add('dance', { loop: true, volume: 0.5 });
         this.music.play();
@@ -51,20 +25,9 @@ class Menu extends Phaser.Scene {
         },
         fixedWidth: 0
       }
-
-      let tutorialConfig = {
-        fontFamily: 'Orbitron',
-        fontSize: '15px',
-        backgroundColor: '',
-        color: '#E31E29',
-        align: 'right',
-        padding: {
-            top: 5,
-            bottom: 5,
-        },
-        fixedWidth: 0
-      }
     
+      this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'CITY SCRAPER', menuConfig).setOrigin(0.5)
+
       let highScoreConfig = {
         fontFamily: 'Orbitron',
         fontSize: '28px',
@@ -78,9 +41,7 @@ class Menu extends Phaser.Scene {
     // We'll assume game.config.width is the game width:
     this.scoreHigh = this.add.text(borderUISize, borderUISize + borderPadding, highScore, highScoreConfig);
 
-      this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'CITY SCRAPER', menuConfig).setOrigin(0.5)
-
-      let playButton = this.add.text(game.config.width / 2, game.config.height / 2 + 60, 'PLAY', menuConfig) // <-- Adjusted Y position
+      let playButton = this.add.text(game.config.width / 2, game.config.height / 2 + 60, 'RESET', menuConfig) // <-- Adjusted Y position
           .setOrigin(0.5)
           .setInteractive()
           .on('pointerover', () => {
@@ -98,8 +59,26 @@ class Menu extends Phaser.Scene {
             this.scene.start('playScene')
           })
 
+          let menuButton = this.add.text(game.config.width / 2, game.config.height / 2 + 120, 'MENU', menuConfig) // <-- Adjusted Y position
+          .setOrigin(0.5)
+          .setInteractive()
+          .on('pointerover', () => {
+            this.sound.play('hover');
+            menuButton.setStyle({ color: '#ef4591' }); 
+          })
+          .on('pointerout', () => playButton.setStyle({ backgroundColor: '', color: '#E31E29' })) // Reset
+          .on('pointerdown', () => {
+            this.sound.play('select');
+            menuButton.setStyle({ color: '#ef4591' }); 
+            game.settings = {
+              roofSpeed: 3,
+            }
+            this.sound.stopByKey('dance')
+            this.scene.start('menuScene')
+          })
 
-      let creditsButton = this.add.text(game.config.width / 2, game.config.height / 2 + 120, 'CREDITS', menuConfig) // <-- Adjusted Y position
+
+      let creditsButton = this.add.text(game.config.width / 2, game.config.height / 2 + 180, 'CREDITS', menuConfig) // <-- Adjusted Y position
           .setOrigin(0.5)
           .setInteractive()
           .on('pointerover', () => {
@@ -114,10 +93,10 @@ class Menu extends Phaser.Scene {
             this.scene.start('creditsscene')
           })
 
-    this.add.text(game.config.width/2, game.config.height/2, 'Use Arrow keys to jump / move', tutorialConfig).setOrigin(0.5)
-    tutorialConfig.backgroundColor = '#E31E29'
-    tutorialConfig.color = '#000'
-    this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, '', tutorialConfig).setOrigin(0.5)
+    this.add.text(game.config.width/2, game.config.height/2, 'USE SPACE TO JUMP', menuConfig).setOrigin(0.5)
+    menuConfig.backgroundColor = '#E31E29'
+    menuConfig.color = '#000'
+    this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, '', menuConfig).setOrigin(0.5)
 
     
 

@@ -1,5 +1,3 @@
-const MAX_ROOFS = 10;  
-
 
 class Play extends Phaser.Scene {
     constructor(){
@@ -45,17 +43,15 @@ class Play extends Phaser.Scene {
         // Enable physics for the player (now that it has been created)
         this.physics.world.enable(this.player);
         
-        // Initialize the roofs group
-        this.roofs = this.add.group();
-        this.createInitialRoof();
+        this.roofs = this.add.group(); // Create a group to store roofs
+        let spacing = 200; // Base distance between buildings
+        for (let i = 0; i < 10; i++) {
+            let xPos = i * spacing + Phaser.Math.Between(50, 150); // Space out the roofs with some randomness
+            let newRoof = new Roof(this, xPos, game.config.height - 25, this.getRandomRoofTexture());
+            this.roofs.add(newRoof);
+            this.roofCounter++; // Increase count
+        }
 
-        // Spawn roofs
-        this.spawnRoof();
-
-        // Enable physics for each roof
-        this.roofs.children.iterate((roof) => {
-            this.physics.world.enable(roof);
-        });
 
         this.physics.add.collider(this.player, this.roofs);
 
@@ -106,18 +102,7 @@ class Play extends Phaser.Scene {
                 this.scene.start('playScene');
             });
     
-        // Spawn roofs
-        this.roofs = this.add.group(); // Group to manage roofs
-        this.spawnRoof(); // Initial roof
-
-        // Set up a timer to spawn roofs every 3 seconds
-        this.time.addEvent({
-            delay: 500, // Delay of 3 seconds
-            callback: this.spawnRoof, // Function to call on each timer tick
-            callbackScope: this, // Keep the correct context (this refers to the scene)
-            loop: true // Repeat the event indefinitely
-        });
-        
+  
     
         // Score configuration (if you need to show score)
         let scoreConfig = {
@@ -147,28 +132,8 @@ class Play extends Phaser.Scene {
     }
     
 
-    spawnRoof() {
-        // If the number of roofs exceeds the cap, reset and recycle a roof
-        if (this.roofs.getChildren().length >= MAX_ROOFS) {
-            let oldRoof = this.roofs.getFirstAlive(); // Get the first active roof
-            oldRoof.x = game.config.width;  // Reset position
-            oldRoof.setTexture(this.getRandomRoofTexture()); // Set new texture
-            oldRoof.setScale(0.4);  // Reset scale if needed
-        } else {
-            // If the cap is not exceeded, spawn a new roof
-            let newRoof = new Roof(this, game.config.width, game.config.height - borderUISize - borderPadding + 50, this.getRandomRoofTexture());
-            newRoof.setScale(0.4);
-            this.roofs.add(newRoof); // Add new roof to the group
-        }
-    }
-    createInitialRoof() {
-        // Create an initial roof at the back left of the screen where the player spawns
-        let initialRoof = new Roof(this, this.player.x -25, this.player.y + 150, 'roof1');
-        initialRoof.setScale(0.4);
-        this.roofs.add(initialRoof);
-        
-        
-    }
+
+    
 
     // Helper function to get a random roof texture
     getRandomRoofTexture() {
@@ -190,22 +155,25 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-    this.cityFAR.tilePositionX += .5;
-    this.cityMID.tilePositionX += 1;
-
-    this.roofs.children.iterate((roof) => {
-        if (roof) {
-            // Manually update the x position
-            roof.x -= game.settings.roofSpeed;
-            // If the roof has a physics body, update its position as well
-            if (roof.body) {
-                roof.body.x = roof.x;
-                
-            }
+        this.cityFAR.tilePositionX += .5;
+        this.cityMID.tilePositionX += 1;
+    
+    
+        this.roofs.children.iterate((roof) => {
+            roof.update();
+        });
+        this.updateScore()
+        this.player.update(this.cursors);
+        console.log(this.player.y)
+    
+    
+        if (this.player.y > game.config.height-70) {
+            this.sound.stopByKey('grid')
+    
+            this.sound.play('deathSound');
+            this.scene.start('gameoverScene');
         }
-    });
-    this.updateScore()
-    this.player.update(this.cursors);
-}
+    }
+    
 
 }
